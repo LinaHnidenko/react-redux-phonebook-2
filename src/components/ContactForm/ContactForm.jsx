@@ -1,33 +1,18 @@
-import { useReducer } from 'react';
 import css from './ContactForm.module.css';
-
-function reducer(prevState, action) {
-  if (action.type === 'name') {
-    return {
-      ...prevState,
-      name: action.payload,
-    };
-  }
-  if (action.type === 'number') {
-    return {
-      ...prevState,
-      number: action.payload,
-    };
-  }
-}
+import { useDispatch, useSelector } from 'react-redux';
+import { setName, setNumber } from 'redux/contactForm/contactFormSlice';
 
 export const ContactForm = ({ createContact }) => {
-  const [state, dispatch] = useReducer(reducer, {
-    name: '',
-    number: '',
-  });
+  const state = useSelector(state => state.contactForm);
+
+  const dispatch = useDispatch();
 
   const handleChange = ({ target }) => {
     if (target.name === 'name') {
-      dispatch({ type: 'name', payload: target.value });
+      dispatch(setName(target.value));
     }
     if (target.name === 'number') {
-      dispatch({ type: 'number', payload: target.value });
+      dispatch(setNumber(target.value));
     }
   };
 
@@ -40,8 +25,8 @@ export const ContactForm = ({ createContact }) => {
   };
 
   const reset = () => {
-    dispatch({ type: 'name', payload: '' });
-    dispatch({ type: 'number', payload: '' });
+    dispatch(setName(''));
+    dispatch(setNumber(''));
   };
 
   return (

@@ -1,23 +1,14 @@
-import { useEffect, useState } from 'react';
 import { ContactForm } from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
 import { nanoid } from 'nanoid';
 import { Notify } from 'notiflix';
+import { useDispatch, useSelector } from 'react-redux';
+import { setContacts, setFilter } from 'redux/phonebook/phonebookSlice';
 
 export const App = () => {
-  const [contacts, setContacts] = useState([]);
-  const [filter, setFilter] = useState('');
-
-  useEffect(() => {
-    const localContacts = localStorage.getItem('contacts');
-    if (localContacts) setContacts(JSON.parse(localContacts));
-  }, []);
-
-  useEffect(() => {
-    contacts.length &&
-      localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
+  const { contacts, filter } = useSelector(state => state.phonebook);
+  const dispatch = useDispatch();
 
   const createContact = data => {
     if (contacts.some(contact => contact.name === data.name)) {
@@ -28,19 +19,18 @@ export const App = () => {
       ...data,
       id: nanoid(),
     };
-
-    setContacts([...contacts, newContact]);
+    dispatch(setContacts([...contacts, newContact]));
 
     Notify.success(`${data.name} has been successfully added to your contacts`);
   };
 
   const onRemoveContact = contactId => {
-    setContacts(contacts.filter(contact => contact.id !== contactId));
+    dispatch(setContacts(contacts.filter(contact => contact.id !== contactId)));
     Notify.success('The contact has been successfully removed');
   };
 
   const onFilterChange = evt => {
-    setFilter(evt.currentTarget.value);
+    dispatch(setFilter(evt.currentTarget.value));
   };
 
   const handleFilterContacts = () => {
